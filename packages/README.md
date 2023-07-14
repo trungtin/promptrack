@@ -1,0 +1,1 @@
+Each of subdirectories in this directory should be a separated package.

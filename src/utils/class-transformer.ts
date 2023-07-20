@@ -22,7 +22,10 @@ export function mapToInstance<T, V>(
   return (plain: V) =>
     plainToInstance(cls, plain, {
       exposeDefaultValues: true,
+      // When we use excludeExtraneousValues, the strategy become "excludeAll",
+      // so we have to manually expose all properties (by using ExposeAll, or Expose on each property)
       excludeExtraneousValues: true,
+      excludePrefixes: ['_'],
       ...options,
     })
 }
@@ -39,6 +42,7 @@ export function ExposeAll<T>(options: ExposeOptions = {}): ClassDecorator {
   return (target: any) => {
     const sample = new target()
     for (const propertyName of Object.getOwnPropertyNames(sample)) {
+      if (propertyName.startsWith('_')) continue
       // TODO: check if property is already exposed or is excluded
       // TODO: do we need to use getOwnPropertyDescriptors to check for the type of the property?
       Expose(options)(target, propertyName)

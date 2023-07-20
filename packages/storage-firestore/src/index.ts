@@ -47,7 +47,7 @@ export class FirestoreStorage implements IStorage {
       await getDocs(
         collection(this.firestore, 'prompts').withConverter(this.converter)
       )
-    ).docs as T
+    ).docs.map((d) => d.data()) as T
   }
   async getPrompt<T>({ promptName }: { promptName: string }) {
     const results = await getDoc(

@@ -19,26 +19,26 @@ export class FirestoreStorage implements IStorage {
 
   constructor(private readonly firestore: Firestore) {}
 
-  withConverter(
+  withConverter<T>(
     fromFirestore: (v: any) => any = (v: any) => v,
-    toFirestore: (v: any) => DocumentSnapshot = (v: any) => v
+    toFirestore: (v: any) => DocumentSnapshot<T> = (v: any) => v
   ) {
     return Object.assign(new FirestoreStorage(this.firestore), this, {
       converter: {
-        fromFirestore: (v: DocumentSnapshot) => fromFirestore(v.data()),
+        fromFirestore: (v: DocumentSnapshot<T>) => fromFirestore(v.data()),
         toFirestore,
       },
     })
   }
 
-  usePromptCollection() {
-    return useCollection(
-      collection(this.firestore, 'prompts').withConverter(this.converter)
+  usePromptCollection<T = DocumentData>() {
+    return useCollection<T>(
+      collection(this.firestore, 'prompts').withConverter<T>(this.converter)
     )
   }
-  usePrompt({ promptName }: { promptName: string }) {
-    return useDocument(
-      doc(this.firestore, 'prompts', promptName).withConverter(this.converter)
+  usePrompt<T = DocumentData>({ promptName }: { promptName: string }) {
+    return useDocument<T>(
+      doc(this.firestore, 'prompts', promptName).withConverter<T>(this.converter)
     )
   }
 

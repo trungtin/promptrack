@@ -49,7 +49,7 @@ export class Promptrack {
   static _promptDto = mapToInstance(Prompt)
 
   usePrompts() {
-    return this.storage.usePromptCollection()
+    return this.storage.usePromptCollection<Prompt>()
   }
   async getPrompts() {
     return await this.storage
@@ -58,7 +58,7 @@ export class Promptrack {
   }
 
   usePrompt({ promptName }: { promptName: string }) {
-    return this.storage.usePrompt({ promptName })
+    return this.storage.usePrompt<Prompt>({ promptName })
   }
   async getPrompt({ promptName }: { promptName: string }) {
     return await this.storage

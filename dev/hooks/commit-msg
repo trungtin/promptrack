@@ -1,0 +1,12 @@
+#!/bin/sh
+
+echo "Running commit-msg hook"
+branch="$(git rev-parse --abbrev-ref HEAD)";
+commit_regex='(((feat|fix|chore|refactor|style|test|docs)((\((\w|-){0,15}\)))?))(:.\S.*)';
+error_msg="Aborting commit. Your commit message format is invalid, please check the references."
+commit_message=$(cat $1)
+
+if ! grep -iqE "$commit_regex" <<<"${commit_message}"; then
+echo "$error_msg" >&2
+exit 1
+fi

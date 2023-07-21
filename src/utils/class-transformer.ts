@@ -14,10 +14,6 @@ import {
 export function mapToInstance<T, V>(
   cls: ClassConstructor<T>,
   options?: ClassTransformOptions
-): (plain: V) => T[]
-export function mapToInstance<T, V>(
-  cls: ClassConstructor<T>,
-  options?: ClassTransformOptions
 ): (plain: V) => T {
   return (plain: V) =>
     plainToInstance(cls, plain, {

@@ -1,58 +1,67 @@
 /* eslint-disable react-hooks/rules-of-hooks*/
 
-import { IStorage } from '@promptrack/storage'
+import { mapToInstance } from '@/utils/class-transformer'
+import { IPrompt, IStorage, Prompt } from '@promptrack/storage'
 
 import {
-  collection,
+  DocumentData,
+  DocumentSnapshot,
   Firestore,
+  collection,
   doc,
   getDoc,
   getDocs,
-  QuerySnapshot,
-  DocumentData,
-  DocumentSnapshot,
+  setDoc,
 } from 'firebase/firestore'
-import { useCollection, useDocument } from 'react-firebase-hooks/firestore'
+import {
+  useCollectionData,
+  useDocumentData,
+} from 'react-firebase-hooks/firestore'
+
+const mapToPrompt = mapToInstance<IPrompt, any>(Prompt)
+const promptConverter = {
+  fromFirestore: (v: DocumentSnapshot<DocumentData>) => {
+    return mapToPrompt({ ...v.data(), id: v.id })
+  },
+  toFirestore: (v: IPrompt) => {
+    const d: Partial<IPrompt> = { ...v.toStorageObject() }
+    delete d.id
+    return d as DocumentData
+  },
+}
 
 export class FirestoreStorage implements IStorage {
-  converter = null
-
   constructor(private readonly firestore: Firestore) {}
 
-  withConverter<T>(
-    fromFirestore: (v: any) => any = (v: any) => v,
-    toFirestore: (v: any) => DocumentSnapshot<T> = (v: any) => v
-  ) {
-    return Object.assign(new FirestoreStorage(this.firestore), this, {
-      converter: {
-        fromFirestore: (v: DocumentSnapshot<T>) => fromFirestore(v.data()),
-        toFirestore,
-      },
-    })
-  }
-
-  usePromptCollection<T = DocumentData>() {
-    return useCollection<T>(
-      collection(this.firestore, 'prompts').withConverter<T>(this.converter)
+  usePromptCollection() {
+    return useCollectionData(
+      collection(this.firestore, 'prompts').withConverter(promptConverter)
     )
   }
-  usePrompt<T = DocumentData>({ promptName }: { promptName: string }) {
-    return useDocument<T>(
-      doc(this.firestore, 'prompts', promptName).withConverter<T>(this.converter)
+  usePrompt({ promptName }: { promptName: string }) {
+    return useDocumentData(
+      doc(this.firestore, 'prompts', promptName).withConverter(promptConverter)
     )
   }
 
-  async getPromptCollection<T>() {
+  async getPromptCollection() {
     return (
       await getDocs(
-        collection(this.firestore, 'prompts').withConverter(this.converter)
+        collection(this.firestore, 'prompts').withConverter(promptConverter)
       )
-    ).docs.map((d) => d.data()) as T
+    ).docs.map((d) => d.data())
   }
-  async getPrompt<T>({ promptName }: { promptName: string }) {
+  async getPrompt({ promptName }: { promptName: string }) {
     const results = await getDoc(
-      doc(this.firestore, 'prompts', promptName).withConverter(this.converter)
+      doc(this.firestore, 'prompts', promptName).withConverter(promptConverter)
     )
-    return results.data() as T
+    return results.data()
+  }
+
+  async updatePrompt({ prompt }: { prompt: IPrompt }) {
+    return await setDoc(
+      doc(this.firestore, 'prompts', prompt.id).withConverter(promptConverter),
+      prompt
+    )
   }
 }

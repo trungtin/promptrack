@@ -4,6 +4,12 @@
   --background-end-rgb: 255, 255, 255;
 }
 
+[data-theme='dark'] {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 26, 32, 44;
+  --background-end-rgb: 18, 24, 32;
+}
+
 html {
   height: 100%;
 }

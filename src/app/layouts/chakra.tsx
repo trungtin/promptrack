@@ -1,5 +1,5 @@
 import { CacheProvider } from '@chakra-ui/next-js'
-import { ChakraProvider, ColorModeScript, LightMode } from '@chakra-ui/react'
+import { ChakraProvider, ColorModeScript } from '@chakra-ui/react'
 
 import { theme } from './theme'
 
@@ -9,11 +9,11 @@ export default function ChakraLayout({
   children: React.ReactNode
 }) {
   return (
-    <CacheProvider>
-      <ChakraProvider theme={theme}>
-        <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-        {children}
-      </ChakraProvider>
-    </CacheProvider>
+    <>
+      <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+      <CacheProvider>
+        <ChakraProvider theme={theme}>{children}</ChakraProvider>
+      </CacheProvider>
+    </>
   )
 }

@@ -4,6 +4,7 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react'
 import {
   redirect,
   useParams,
+  usePathname,
   useRouter,
   useSelectedLayoutSegment,
 } from 'next/navigation'
@@ -21,6 +22,12 @@ function ProjectClientLayout(props: { children: React.ReactNode }) {
   const params = useParams()
   if (!segment) {
     redirect(`/projects/${params.project_id}/${tabs[0].path}`)
+  }
+
+  const pathname = usePathname()
+  if (pathname.split('/').length > 4) {
+    // only render tabs on the project page
+    return props.children
   }
   return (
     <Tabs>

@@ -7,13 +7,17 @@ import { FirestoreStorage } from '@promptrack/storage-firestore'
 import ChakraLayout from './layouts/chakra'
 
 import * as React from 'react'
+import Nav from '@/components/Nav'
 
 const storage = new FirestoreStorage(firestore)
 
 function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
     <ChakraLayout>
-      <PromptrackProvider storage={storage}>{children}</PromptrackProvider>
+      <PromptrackProvider storage={storage}>
+        <Nav></Nav>
+        <main>{children}</main>
+      </PromptrackProvider>
     </ChakraLayout>
   )
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import { AutoResizeTextarea } from '@/components/AutoResizeTextarea'
 import { usePromptrack } from '@/contexts/promptrack'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 import {
@@ -12,12 +13,12 @@ import {
   Skeleton,
   Stack,
   Text,
-  Textarea,
+  useToast
 } from '@chakra-ui/react'
 import { IPrompt } from '@promptrack/storage'
 import { clone, extend } from 'lodash'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 
 function PromptEditPage(props: {}) {
@@ -64,6 +65,9 @@ export default PromptEditPage
 
 function PromptEditPageInner({ prompt }: { prompt: IPrompt }) {
   const promptrack = usePromptrack()
+  const router = useRouter()
+  const toast = useToast()
+
   // must use the same key as in prompt
   // because later we use _.extend to merge the values
   const defaultValues = {
@@ -78,10 +82,19 @@ function PromptEditPageInner({ prompt }: { prompt: IPrompt }) {
     defaultValues,
   })
 
-  function onSubmit(values: any) {
-    return promptrack.updatePrompt({
+  async function onSubmit(values: any) {
+    await promptrack.updatePrompt({
       prompt: extend(clone(prompt), values),
     })
+
+    toast({
+      title: 'Success',
+      description: `Prompt "${prompt.name}" has been updated`,
+      status: 'success',
+      duration: 2000,
+      isClosable: true,
+    })
+    router.push('.')
   }
   function fieldError(name: keyof typeof defaultValues) {
     return Boolean(errors[name] && touched[name])
@@ -110,7 +123,7 @@ function PromptEditPageInner({ prompt }: { prompt: IPrompt }) {
           textarea: true,
         },
       ].map((field) => {
-        const Element = field.textarea ? Textarea : Input
+        const Element = field.textarea ? AutoResizeTextarea : Input
         return (
           <FormControl
             isInvalid={fieldError('name')}
@@ -125,6 +138,11 @@ function PromptEditPageInner({ prompt }: { prompt: IPrompt }) {
               placeholder={field.placeholder}
               {...field.props}
               variant={'outline'}
+              {...(field.textarea
+                ? {
+                    maxRows: 20,
+                  }
+                : {})}
             />
             <FormErrorMessage>
               {errors[field.name]?.message?.toString()}

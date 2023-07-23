@@ -1,21 +1,24 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
+import { usePromptrack } from '@/contexts/promptrack'
+import { ArrowBackIcon } from '@chakra-ui/icons'
 import {
+  Button,
+  FormControl,
   FormErrorMessage,
   FormLabel,
-  FormControl,
+  IconButton,
   Input,
-  Button,
-  Stack,
   Skeleton,
+  Stack,
   Text,
   Textarea,
 } from '@chakra-ui/react'
-import { usePromptrack } from '@/contexts/promptrack'
-import { useParams } from 'next/navigation'
 import { IPrompt } from '@promptrack/storage'
 import { clone, extend } from 'lodash'
+import Link from 'next/link'
+import { useParams } from 'next/navigation'
+import { useForm } from 'react-hook-form'
 
 function PromptEditPage(props: {}) {
   const { prompt_name } = useParams()
@@ -24,23 +27,37 @@ function PromptEditPage(props: {}) {
     promptName: prompt_name,
   })
 
+  let inner
+
   if (loading) {
-    return (
+    inner = (
       <Stack spacing={4}>
         <Skeleton height="20px" />
         <Skeleton height="20px" />
         <Skeleton height="20px" />
       </Stack>
     )
-  }
-  if (loadError) {
-    return <Text>{loadError.message}</Text>
-  }
-  if (!prompt) {
-    return <Text>Not found</Text>
+  } else if (loadError) {
+    inner = <Text>{loadError.message}</Text>
+  } else if (!prompt) {
+    inner = <Text>Not found</Text>
+  } else {
+    inner = <PromptEditPageInner prompt={prompt}></PromptEditPageInner>
   }
 
-  return <PromptEditPageInner prompt={prompt}></PromptEditPageInner>
+  return (
+    <Stack spacing={4} direction="column">
+      <div>
+        <IconButton
+          aria-label="Go back"
+          icon={<ArrowBackIcon />}
+          as={Link}
+          href={`.`}
+        />
+      </div>
+      {inner}
+    </Stack>
+  )
 }
 
 export default PromptEditPage

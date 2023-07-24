@@ -23,9 +23,11 @@
     "paths": {
       "@/*": ["./src/*"],
       "@promptrack/storage": ["./packages/storage/src/index.ts"],
+      "@promptrack/storage/*": ["./packages/storage/src/*"],
       "@promptrack/storage-firestore": [
         "./packages/storage-firestore/src/index.ts"
-      ]
+      ],
+      "@promptrack/storage-firestore/*": ["./packages/storage-firestore/src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks*/
 
-import { mapToInstance } from '@/utils/class-transformer'
 import { IPrompt, IStorage, Prompt } from '@promptrack/storage'
+import { mapToInstance } from '@promptrack/storage/utils'
 
 import {
   DocumentData,

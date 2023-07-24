@@ -1,6 +1,7 @@
 import {
   ClassConstructor,
   ClassTransformOptions,
+  Exclude,
   Expose,
   ExposeOptions,
   plainToInstance,
@@ -45,3 +46,5 @@ export function ExposeAll<T>(options: ExposeOptions = {}): ClassDecorator {
     }
   }
 }
+
+export { Exclude, Expose }

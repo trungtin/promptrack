@@ -1,5 +1,7 @@
+import { redirect } from "next/navigation"
+
 function Page(props: {}) {
-  return <div>Nothing</div>
+  return redirect('.')
 }
 
 export default Page

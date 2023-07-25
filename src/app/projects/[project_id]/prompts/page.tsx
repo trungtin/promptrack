@@ -67,9 +67,9 @@ function Prompt({ prompt, project_id }: { prompt: any; project_id: string }) {
               colorScheme={useColorModeValue('blackAlpha', 'gray')}
               size="sm"
               as={Link}
-              href={`/projects/${project_id}/prompts/${prompt.id}/edit`}
+              href={`/projects/${project_id}/prompts/${prompt.id}/add`}
             >
-              Edit
+              Add version
             </Button>
           </Stack>
         </Stack>

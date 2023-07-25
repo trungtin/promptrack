@@ -1,6 +1,12 @@
-import { IScriptStorage } from '@promptrack/storage'
-import { IScript, Script } from '@promptrack/storage/schema'
-import { Firestore, collection, doc, getDoc, setDoc } from 'firebase/firestore'
+/* eslint-disable react-hooks/rules-of-hooks */
+import {
+  IScriptStorage,
+  IScript,
+  Script,
+  CollectionDataHook,
+} from '@promptrack/storage'
+import { Firestore, collection, doc, setDoc } from 'firebase/firestore'
+import { useCollectionData } from 'react-firebase-hooks/firestore'
 import { createConverter } from '../utils'
 
 export class ScriptCollection implements IScriptStorage {
@@ -24,8 +30,17 @@ export class ScriptCollection implements IScriptStorage {
       ).withConverter(this.converter)
     )
 
-    await setDoc(doc_ref, script, { merge: true })
+    return await setDoc(doc_ref, script, { merge: true })
+  }
 
-    return (await getDoc(doc_ref)).data()!
+  useScriptCollection(q: { promptName: string }): CollectionDataHook<IScript> {
+    return useCollectionData(
+      collection(
+        this.firestore,
+        'prompts',
+        q.promptName,
+        'scripts'
+      ).withConverter(this.converter)
+    )
   }
 }

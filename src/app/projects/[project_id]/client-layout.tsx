@@ -1,6 +1,6 @@
 'use client'
 
-import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react'
+import { Box, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react'
 import {
   redirect,
   useParams,
@@ -30,28 +30,32 @@ function ProjectClientLayout(props: { children: React.ReactNode }) {
     return props.children
   }
   return (
-    <Tabs>
-      <TabList>
-        {tabs.map((tab) => (
-          <Tab
-            key={tab.path}
-            onClick={() => {
-              router.push(`/projects/${params.project_id}/${tab.path}`)
-            }}
-          >
-            {tab.name}
-          </Tab>
-        ))}
-      </TabList>
+    // <Tabs>
+    //   <TabList>
+    //     {tabs.map((tab) => (
+    //       <Tab
+    //         key={tab.path}
+    //         onClick={() => {
+    //           router.push(`/projects/${params.project_id}/${tab.path}`)
+    //         }}
+    //       >
+    //         {tab.name}
+    //       </Tab>
+    //     ))}
+    //   </TabList>
 
-      <TabPanels>
-        {tabs.map((tab) => (
-          <TabPanel key={tab.path}>
-            {segment == tab.path ? props.children : null}
-          </TabPanel>
-        ))}
-      </TabPanels>
-    </Tabs>
+    // <TabPanels>
+    <>
+      {tabs.map((tab) => (
+        // <TabPanel key={tab.path}>
+        <Box key={tab.path} whiteSpace="pre-wrap">
+          {segment == tab.path ? props.children : null}
+        </Box>
+        // </TabPanel>
+      ))}
+    </>
+    //   </TabPanels>
+    // </Tabs>
   )
 }
 

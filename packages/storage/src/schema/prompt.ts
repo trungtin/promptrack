@@ -1,22 +1,15 @@
 import { Exclude, Expose, ExposeAll } from '@promptrack/storage/utils'
 import { BaseModel, IBaseModel } from './base'
 
-export interface IPrompt extends IBaseModel {
+interface IPromptBase extends IBaseModel {
   id: string
-  name: string
   prompt: string
-
   keys: string[]
 }
 
-@ExposeAll()
-export class Prompt extends BaseModel implements IPrompt {
+class PromptBase extends BaseModel {
   id: string = ''
   prompt: string = ''
-  name: string = ''
-
-  default_values: Record<string, any> = {}
-  types: Record<string, string> = {}
 
   @Exclude()
   _keys: string[] | null = null
@@ -26,6 +19,29 @@ export class Prompt extends BaseModel implements IPrompt {
     if (this._keys) return this._keys
     return parse_template_keys(this.prompt)
   }
+}
+
+export interface IPromptVersion extends IPromptBase {
+  displayName: string
+}
+
+@ExposeAll()
+export class PromptVersion extends PromptBase implements IPromptVersion {
+  displayName: string = ''
+}
+
+export interface IPrompt extends IPromptBase {
+  name: string
+  activeVersionId: string
+}
+
+@ExposeAll()
+export class Prompt extends PromptBase implements IPrompt {
+  name: string = ''
+  activeVersionId: string = ''
+
+  default_values: Record<string, any> = {}
+  types: Record<string, string> = {}
 }
 
 /**

@@ -1,14 +1,20 @@
 'use client'
 
-import { AutoResizeTextarea, GoBackButton, LoadingStatus } from '@/components'
+import {
+  AutoResizeTextarea,
+  Field,
+  GoBackButton,
+  LoadingStatus,
+} from '@/components'
 import { usePromptrack } from '@/contexts/promptrack'
 import {
+  AbsoluteCenter,
+  Box,
   Button,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Input,
+  Divider,
+  Text,
   Stack,
+  useColorModeValue,
   useToast,
 } from '@chakra-ui/react'
 import { IPrompt } from '@promptrack/storage'
@@ -24,6 +30,7 @@ function PlaygroundScriptsCreatePageForm(props: { prompt: IPrompt }) {
   // must use the same key as in prompt
   // because later we use _.extend to merge the values
   const defaultValues = {
+    displayName: '',
     context: {},
   }
   const {
@@ -35,11 +42,12 @@ function PlaygroundScriptsCreatePageForm(props: { prompt: IPrompt }) {
     defaultValues,
   })
 
-  async function onSubmit(values: any) {
+  async function onSubmit(values: typeof defaultValues) {
     const { context } = values
     await promptrack.storage.script.upsertScript({
       promptName: props.prompt.name,
       script: {
+        displayName: values.displayName,
         context: context,
       },
     })
@@ -53,9 +61,7 @@ function PlaygroundScriptsCreatePageForm(props: { prompt: IPrompt }) {
     router.push('.')
   }
   function fieldErrorMessage(name: keyof typeof defaultValues) {
-    const fieldState = getFieldState(name)
-
-    return fieldState.error?.message?.toString() ?? ''
+    return getFieldState(name).error?.message?.toString() ?? ''
   }
 
   const contextArgKeys = props.prompt.keys
@@ -64,38 +70,46 @@ function PlaygroundScriptsCreatePageForm(props: { prompt: IPrompt }) {
     <form onSubmit={handleSubmit(onSubmit)}>
       <Stack direction="column" spacing={6}>
         {[
-          ...contextArgKeys.map((key) => {
-            return {
-              // name: `context.${key}`,
-              name: `context.${key}`,
-              displayName: key,
-              disabled: false,
-              placeholder: '',
-              props: register(`context.${key}` as any, {
-                required: 'This is required',
-              }),
-            }
-          }),
+          {
+            displayName: 'Display Name',
+            placeholder: '',
+            props: register('displayName' as any, {
+              required: 'This is required',
+            }),
+          },
         ].map((field) => {
-          const fieldError = fieldErrorMessage(field.name as any)
           return (
-            <FormControl
-              isInvalid={Boolean(fieldError)}
-              isDisabled={isSubmitting || field.disabled}
-              key={field.name}
-            >
-              <FormLabel htmlFor={field.name + '-input'}>
-                {field.displayName}
-              </FormLabel>
-              <AutoResizeTextarea
-                id={field.name + '-input'}
-                placeholder={field.placeholder}
-                {...field.props}
-                variant={'outline'}
-                maxRows={20}
-              />
-              <FormErrorMessage>{fieldError}</FormErrorMessage>
-            </FormControl>
+            <Field
+              {...field}
+              disabled={isSubmitting}
+              key={field.props.name}
+              fieldErrorMessage={fieldErrorMessage}
+              fieldProps={field.props}
+            ></Field>
+          )
+        })}
+        <Box position="relative" padding="10">
+          <Divider />
+          <AbsoluteCenter
+            bg={useColorModeValue('#fff', 'rgb(25, 30, 42)')}
+            px="4"
+          >
+            <Text as="b">Context</Text>
+          </AbsoluteCenter>
+        </Box>
+        {contextArgKeys.map((key) => {
+          const name = `context.${key}`
+          return (
+            <Field
+              displayName={key}
+              placeholder=""
+              disabled={isSubmitting}
+              key={name}
+              fieldErrorMessage={fieldErrorMessage}
+              fieldProps={register(name as any, {
+                required: 'This is required',
+              })}
+            />
           )
         })}
       </Stack>

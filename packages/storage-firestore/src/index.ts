@@ -17,6 +17,7 @@ import {
   useCollectionData,
   useDocumentData,
 } from 'react-firebase-hooks/firestore'
+import { ScriptCollection } from './collections/script'
 
 const mapToPrompt = mapToInstance<IPrompt, any>(Prompt)
 const promptConverter = {
@@ -25,12 +26,13 @@ const promptConverter = {
   },
   toFirestore: (v: IPrompt) => {
     const d: Partial<IPrompt> = { ...v.toStorageObject() }
-    delete d.id
     return d as DocumentData
   },
 }
 
 export class FirestoreStorage implements IStorage {
+  script = new ScriptCollection(this.firestore)
+
   constructor(private readonly firestore: Firestore) {}
 
   usePromptCollection() {

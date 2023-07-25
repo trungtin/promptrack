@@ -1,13 +1,10 @@
 import { Exclude, Expose, ExposeAll } from '@promptrack/storage/utils'
-import { BaseModel } from './base'
+import { BaseModel, IBaseModel } from './base'
 
-export interface IPrompt {
+export interface IPrompt extends IBaseModel {
   id: string
   name: string
   prompt: string
-
-  toAPIObject(): Record<string, any>
-  toStorageObject(): Record<string, any>
 }
 
 @ExposeAll()

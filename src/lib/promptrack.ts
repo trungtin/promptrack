@@ -1,7 +1,7 @@
 import { IStorage, Prompt } from '@promptrack/storage'
 
 export class Promptrack {
-  private storage: IStorage
+  storage: IStorage
 
   constructor({ storage }: { storage: IStorage }) {
     this.storage = storage

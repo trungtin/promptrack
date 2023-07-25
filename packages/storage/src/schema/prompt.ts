@@ -5,6 +5,8 @@ export interface IPrompt extends IBaseModel {
   id: string
   name: string
   prompt: string
+
+  keys: string[]
 }
 
 @ExposeAll()
@@ -19,8 +21,8 @@ export class Prompt extends BaseModel implements IPrompt {
   @Exclude()
   _keys: string[] | null = null
 
-  @Expose({ name: 'keys', groups: ['api'] })
-  getKeys() {
+  @Expose({ groups: ['api'] })
+  get keys() {
     if (this._keys) return this._keys
     return parse_template_keys(this.prompt)
   }

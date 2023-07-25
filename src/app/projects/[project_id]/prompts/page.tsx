@@ -59,6 +59,14 @@ function Prompt({ prompt, project_id }: { prompt: any; project_id: string }) {
               colorScheme={useColorModeValue('blackAlpha', 'gray')}
               size="sm"
               as={Link}
+              href={`/projects/${project_id}/playground/${prompt.id}`}
+            >
+              Playground
+            </Button>
+            <Button
+              colorScheme={useColorModeValue('blackAlpha', 'gray')}
+              size="sm"
+              as={Link}
               href={`/projects/${project_id}/prompts/${prompt.id}/edit`}
             >
               Edit

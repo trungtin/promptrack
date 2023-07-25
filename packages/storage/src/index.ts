@@ -1,10 +1,10 @@
 import { IPrompt, IScript, Prompt } from './schema'
-import { CollectionDataHook, DocumentDataHook } from './types'
+import { CollectionDataHook, DocumentDataHook, UpsertModel } from './types'
 
 export interface IScriptStorage {
-  upsertScriptVersion(q: {
+  upsertScript(q: {
     promptName: string
-    script: IScript
+    script: UpsertModel<IScript>
   }): Promise<IScript>
 }
 
@@ -26,4 +26,3 @@ export interface IStorage {
 
 export { Prompt }
 export type { IPrompt }
-

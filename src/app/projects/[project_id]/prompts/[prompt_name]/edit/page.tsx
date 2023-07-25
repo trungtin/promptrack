@@ -124,7 +124,7 @@ function PromptEditPageInner({ prompt }: { prompt: IPrompt }) {
           </FormControl>
         )
       })}
-      <Button mt={4} colorScheme="blue" isLoading={isSubmitting} type="submit">
+      <Button mt={12} colorScheme="blue" isLoading={isSubmitting} type="submit">
         Submit
       </Button>
     </form>

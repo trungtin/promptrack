@@ -1,23 +1,18 @@
 'use client'
 
-import { AutoResizeTextarea } from '@/components/AutoResizeTextarea'
+import { AutoResizeTextarea, GoBackButton, LoadingStatus } from '@/components'
 import { usePromptrack } from '@/contexts/promptrack'
-import { ArrowBackIcon } from '@chakra-ui/icons'
 import {
   Button,
   FormControl,
   FormErrorMessage,
   FormLabel,
-  IconButton,
   Input,
-  Skeleton,
   Stack,
-  Text,
-  useToast
+  useToast,
 } from '@chakra-ui/react'
 import { IPrompt } from '@promptrack/storage'
 import { clone, extend } from 'lodash'
-import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 
@@ -28,35 +23,14 @@ function PromptEditPage(props: {}) {
     promptName: prompt_name,
   })
 
-  let inner
-
-  if (loading) {
-    inner = (
-      <Stack spacing={4}>
-        <Skeleton height="20px" />
-        <Skeleton height="20px" />
-        <Skeleton height="20px" />
-      </Stack>
-    )
-  } else if (loadError) {
-    inner = <Text>{loadError.message}</Text>
-  } else if (!prompt) {
-    inner = <Text>Not found</Text>
-  } else {
-    inner = <PromptEditPageInner prompt={prompt}></PromptEditPageInner>
-  }
-
   return (
     <Stack spacing={4} direction="column">
       <div>
-        <IconButton
-          aria-label="Go back"
-          icon={<ArrowBackIcon />}
-          as={Link}
-          href={`.`}
-        />
+        <GoBackButton></GoBackButton>
       </div>
-      {inner}
+      <LoadingStatus data={prompt} loading={loading} error={loadError}>
+        <PromptEditPageInner prompt={prompt!}></PromptEditPageInner>
+      </LoadingStatus>
     </Stack>
   )
 }
@@ -97,7 +71,7 @@ function PromptEditPageInner({ prompt }: { prompt: IPrompt }) {
     router.push('.')
   }
   function fieldError(name: keyof typeof defaultValues) {
-    return Boolean(errors[name] && touched[name])
+    return Boolean(errors[name])
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -126,7 +100,7 @@ function PromptEditPageInner({ prompt }: { prompt: IPrompt }) {
         const Element = field.textarea ? AutoResizeTextarea : Input
         return (
           <FormControl
-            isInvalid={fieldError('name')}
+            isInvalid={fieldError(field.name)}
             isDisabled={isSubmitting || field.disabled}
             key={field.name}
           >

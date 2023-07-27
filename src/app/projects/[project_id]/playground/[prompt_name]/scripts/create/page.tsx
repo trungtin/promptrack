@@ -1,26 +1,21 @@
 'use client'
 
-import {
-  AutoResizeTextarea,
-  Field,
-  GoBackButton,
-  LoadingStatus,
-} from '@/components'
+import { Field, GoBackButton, LoadingStatus } from '@/components'
 import { usePromptrack } from '@/contexts/promptrack'
 import {
   AbsoluteCenter,
   Box,
   Button,
   Divider,
-  Text,
   Stack,
+  Text,
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react'
 import { IPrompt } from '@promptrack/storage'
 import { useParams, useRouter } from 'next/navigation'
 
-import { useForm } from 'react-hook-form'
+import { FieldPath, useForm } from 'react-hook-form'
 
 function PlaygroundScriptsCreatePageForm(props: { prompt: IPrompt }) {
   const promptrack = usePromptrack()
@@ -60,7 +55,7 @@ function PlaygroundScriptsCreatePageForm(props: { prompt: IPrompt }) {
     })
     router.push('.')
   }
-  function fieldErrorMessage(name: keyof typeof defaultValues) {
+  function fieldErrorMessage(name: FieldPath<typeof defaultValues>) {
     return getFieldState(name).error?.message?.toString() ?? ''
   }
 
@@ -79,7 +74,7 @@ function PlaygroundScriptsCreatePageForm(props: { prompt: IPrompt }) {
           },
         ].map((field) => {
           return (
-            <Field
+            <Field<typeof defaultValues>
               {...field}
               disabled={isSubmitting}
               key={field.props.name}
@@ -100,7 +95,7 @@ function PlaygroundScriptsCreatePageForm(props: { prompt: IPrompt }) {
         {contextArgKeys.map((key) => {
           const name = `context.${key}`
           return (
-            <Field
+            <Field<typeof defaultValues>
               displayName={key}
               placeholder=""
               disabled={isSubmitting}
@@ -123,7 +118,7 @@ function PlaygroundScriptsCreatePageForm(props: { prompt: IPrompt }) {
 function PlaygroundScriptsCreatePage(props: {}) {
   const { prompt_name } = useParams()
   const promptrack = usePromptrack()
-  const [prompt, loading, loadError] = promptrack.usePrompt({
+  const [prompt, loading, loadError] = promptrack.storage.prompt.usePrompt({
     promptName: prompt_name,
   })
   return (

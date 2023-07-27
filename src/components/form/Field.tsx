@@ -1,15 +1,15 @@
 import { AutoResizeTextarea } from '@/components'
 import { FormControl, FormErrorMessage, FormLabel } from '@chakra-ui/react'
-import { UseFormRegisterReturn } from 'react-hook-form'
+import { FieldPath, FieldValues, UseFormRegisterReturn } from 'react-hook-form'
 
-function Field<T>({
+function Field<T extends FieldValues>({
   fieldErrorMessage,
   displayName,
   placeholder,
   fieldProps,
   disabled,
 }: {
-  fieldErrorMessage: (name: keyof T) => string
+  fieldErrorMessage: (name: FieldPath<T>) => string
   displayName: string
   placeholder: string
   fieldProps: UseFormRegisterReturn<any>

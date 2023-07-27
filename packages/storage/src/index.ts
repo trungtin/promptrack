@@ -1,8 +1,20 @@
-import { IPrompt, IPromptVersion, IScript, Prompt } from './schema'
-import { CollectionDataHook, DocumentDataHook, UpsertModel } from './types'
+import {
+  IPrompt,
+  IPromptVersion,
+  IScript,
+  PromptChat,
+  PromptCompletion,
+} from './schema'
+import {
+  CollectionDataHook,
+  DistributivePick,
+  DocumentDataHook,
+  ExclusifyUnion,
+  UpsertModel,
+} from './types'
 
-export * from './types'
 export * from './schema'
+export * from './types'
 
 export interface IScriptStorage {
   upsertScript(q: {
@@ -14,13 +26,6 @@ export interface IScriptStorage {
 }
 
 export interface IPromptStorage {
-  upsertPromptVersion(q: {
-    promptId: string
-    version: Omit<UpsertModel<IPromptVersion>, 'keys'>
-  }): Promise<void>
-}
-
-export interface IStorage {
   usePromptCollection(): CollectionDataHook<IPrompt>
   usePrompt({ promptName }: { promptName: string }): DocumentDataHook<IPrompt>
 
@@ -31,11 +36,25 @@ export interface IStorage {
     promptName: string
   }): Promise<IPrompt | undefined>
 
-  updatePrompt({ prompt }: { prompt: IPrompt }): Promise<void>
+  upsertPromptVersion(
+    ...params: Params.UpsertPromptVersionParams
+  ): Promise<void>
+}
 
+export namespace Params {
+  export type UpsertPromptVersionParams = [
+    promptId: string,
+    version: DistributivePick<
+      ExclusifyUnion<IPromptVersion>,
+      'displayName' | 'messages' | 'prompt'
+    > & { id?: string }
+  ]
+}
+
+export interface IStorage {
   script: IScriptStorage
   prompt: IPromptStorage
 }
 
-export { Prompt }
+export { PromptChat, PromptCompletion }
 export type { IPrompt }

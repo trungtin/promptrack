@@ -1,18 +1,62 @@
 import { Exclude, Expose, ExposeAll } from '@promptrack/storage/utils'
+import { uniq } from 'lodash'
 import { BaseModel, IBaseModel } from './base'
 
-interface IPromptBase extends IBaseModel {
-  id: string
-  prompt: string
-  keys: string[]
+/**
+ * ==== SHARED ====
+ */
+
+enum ModelName {
+  GPT_35 = 'text-davinci-003',
+  GPT_35_TURBO = 'gpt-3.5-turbo',
+  GPT_4 = 'gpt-4',
 }
 
+/**
+ * shared interface between prompt and prompt-version
+ */
+interface IPromptShared extends IBaseModel {
+  id: string
+  keys: string[]
+
+  model: `${ModelName}`
+}
+
+/**
+ * shared interface between prompt-completion and prompt-version-completion
+ */
+interface IPromptCompletionBase extends IPromptShared {
+  prompt: string
+}
+
+interface IPromptMessage {
+  role: 'user' | 'system' | 'assistant'
+  content: string
+}
+
+/**
+ * shared interface between prompt-chat and prompt-version-chat
+ */
+interface IPromptChatBase extends IPromptShared {
+  messages: IPromptMessage[]
+}
+
+/**
+ * base class of a prompt and prompt-version
+ */
 class PromptBase extends BaseModel {
   id: string = ''
-  prompt: string = ''
 
   @Exclude()
-  _keys: string[] | null = null
+  _keys?: string[] | null = null
+}
+
+/**
+ * shared class between prompt-completion and prompt-version-completion
+ */
+class PromptCompletionBase extends PromptBase implements IPromptCompletionBase {
+  prompt: string = ''
+  model = ModelName.GPT_35
 
   @Expose({ groups: ['api'] })
   get keys() {
@@ -21,28 +65,87 @@ class PromptBase extends BaseModel {
   }
 }
 
-export interface IPromptVersion extends IPromptBase {
-  displayName: string
+/**
+ * shared class between prompt-chat and prompt-version-chat
+ */
+class PromptChatBase extends PromptBase implements IPromptChatBase {
+  messages: IPromptMessage[] = []
+  model = ModelName.GPT_35_TURBO
+
+  @Expose({ groups: ['api'] })
+  get keys() {
+    if (this._keys) return this._keys
+    const keysList = this.messages.reduce(
+      (acc, message) => acc.concat(parse_template_keys(message.content)),
+      [] as string[]
+    )
+    return uniq(keysList)
+  }
 }
 
+/**
+ * ==== Prompt Version ====
+ */
+
+interface IPromptVersionBase {
+  displayName: string
+}
+export interface IPromptVersionCompletion
+  extends IPromptVersionBase,
+    IPromptCompletionBase {}
+export interface IPromptVersionChat
+  extends IPromptVersionBase,
+    IPromptChatBase {}
+export type IPromptVersion = IPromptVersionCompletion | IPromptVersionChat
+
 @ExposeAll()
-export class PromptVersion extends PromptBase implements IPromptVersion {
+export class PromptVersionCompletion
+  extends PromptCompletionBase
+  implements IPromptVersionCompletion
+{
   displayName: string = ''
 }
 
-export interface IPrompt extends IPromptBase {
+@ExposeAll()
+export class PromptVersionChat
+  extends PromptChatBase
+  implements IPromptVersionChat
+{
+  displayName: string = ''
+}
+
+/**
+ * ==== Prompt ====
+ */
+
+export interface IPromptBase {
   name: string
   activeVersionId: string
+
+  default_values: Record<string, any>
+  types: Record<string, string>
 }
 
-@ExposeAll()
-export class Prompt extends PromptBase implements IPrompt {
-  name: string = ''
-  activeVersionId: string = ''
+export interface IPromptCompletion extends IPromptBase, IPromptCompletionBase {}
+export interface IPromptChat extends IPromptBase, IPromptChatBase {}
+export type IPrompt = IPromptCompletion | IPromptChat
 
-  default_values: Record<string, any> = {}
-  types: Record<string, string> = {}
+type Constructor<T = {}> = new (...args: any[]) => T
+
+function PromptBaseMixin<TBase extends Constructor>(Base: TBase) {
+  return class extends Base implements IPromptBase {
+    name: string = ''
+    activeVersionId: string = ''
+
+    default_values: Record<string, any> = {}
+    types: Record<string, string> = {}
+  }
 }
+
+export const PromptCompletion = PromptBaseMixin(PromptCompletionBase)
+ExposeAll()(PromptCompletion)
+export const PromptChat = PromptBaseMixin(PromptChatBase)
+ExposeAll()(PromptChat)
 
 /**
  * Parse keys from a python-like template string

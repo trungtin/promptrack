@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: { prompt_name: string } }
 ) {
   const { prompt_name: promptName } = params
-  const prompt = await promptrack.getPrompt({ promptName })
+  const prompt = await promptrack.storage.prompt.getPrompt({ promptName })
   if (!prompt) {
     return notFound()
   }

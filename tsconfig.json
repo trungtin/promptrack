@@ -20,6 +20,7 @@
       }
     ],
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "paths": {
       "@/*": ["./src/*"],
       "@promptrack/storage": ["./packages/storage/src/index.ts"],

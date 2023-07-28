@@ -25,8 +25,10 @@ import {
   useCollectionData,
   useDocumentData,
 } from 'react-firebase-hooks/firestore'
+import { injectable } from 'tsyringe'
 import { createConverterPairs } from '../utils'
 
+@injectable()
 export class PromptCollection implements IPromptStorage {
   promptConverter = createConverterPairs(
     PromptCompletion,

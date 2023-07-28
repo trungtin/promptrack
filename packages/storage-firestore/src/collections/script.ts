@@ -1,16 +1,19 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import {
-  IScriptStorage,
-  IScript,
-  Script,
   CollectionDataHook,
+  IScript,
+  IScriptStorage,
+  Script,
 } from '@promptrack/storage'
 import { Firestore, collection, doc, setDoc } from 'firebase/firestore'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
+import { injectable } from 'tsyringe'
 import { createConverter } from '../utils'
 
+@injectable()
 export class ScriptCollection implements IScriptStorage {
   converter = createConverter<IScript>(Script)
+
   constructor(private readonly firestore: Firestore) {}
 
   async upsertScript({

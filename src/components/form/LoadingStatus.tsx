@@ -1,4 +1,4 @@
-import { Skeleton, Stack, Text } from '@chakra-ui/react'
+import { PropsOf, Skeleton, Stack, Text } from '@chakra-ui/react'
 import React from 'react'
 
 /**
@@ -16,15 +16,28 @@ import React from 'react'
 export default function LoadingStatus(props: {
   loading: boolean
   error: Error | undefined
+  numberOfLines?: number
   data?: any
   children: React.ReactNode
+  skeletonProps?: PropsOf<typeof Skeleton>
+  loadingProps?: PropsOf<typeof Stack>
 }) {
   if (props.loading) {
     return (
-      <Stack spacing={4}>
-        <Skeleton height="20px" />
-        <Skeleton height="20px" />
-        <Skeleton height="20px" />
+      <Stack
+        spacing={4}
+        justifyContent="center"
+        width="100%"
+        {...props.loadingProps}
+      >
+        {Array.from({ length: props.numberOfLines ?? 3 }).map((_, i) => (
+          <Skeleton
+            height="20px"
+            key={i}
+            width="100%"
+            {...props.skeletonProps}
+          />
+        ))}
       </Stack>
     )
   }

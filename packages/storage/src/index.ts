@@ -23,11 +23,23 @@ export interface IScriptStorage {
   }): Promise<void>
 
   useScriptCollection(q: { promptName: string }): CollectionDataHook<IScript>
+
+  runScript(
+    promptName: string,
+    scriptId: string,
+    promptVersionIds: string[]
+  ): Promise<void>
 }
 
 export interface IPromptStorage {
   usePromptCollection(): CollectionDataHook<IPrompt>
   usePrompt({ promptName }: { promptName: string }): DocumentDataHook<IPrompt>
+
+  usePromptVersionCollection({
+    promptName,
+  }: {
+    promptName: string
+  }): CollectionDataHook<IPromptVersion>
 
   getPromptCollection(): Promise<IPrompt[]>
   getPrompt({

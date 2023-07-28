@@ -58,6 +58,17 @@ export class PromptCollection implements IPromptStorage {
     )
   }
 
+  usePromptVersionCollection({ promptName }: { promptName: string }) {
+    return useCollectionData(
+      collection(
+        this.firestore,
+        'prompts',
+        promptName,
+        'versions'
+      ).withConverter(this.versionConverter)
+    )
+  }
+
   async getPromptCollection() {
     return (
       await getDocs(

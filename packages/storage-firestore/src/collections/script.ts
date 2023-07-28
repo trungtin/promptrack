@@ -43,4 +43,12 @@ export class ScriptCollection implements IScriptStorage {
       ).withConverter(this.converter)
     )
   }
+
+  async runScript(
+    promptName: string,
+    scriptId: string,
+    promptVersionIds: string[]
+  ) {
+    return
+  }
 }
